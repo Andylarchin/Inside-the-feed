@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inside the Feed: The Cultural & Cognitive Impact of Short-Form Media</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg-2: #11111a;
+    --ink: #f3f3f7;
+    --muted: #8a8a99;
+    --accent: #ff2d63;
+    --accent-2: #25f4ee;
+    --accent-3: #fffc00;
+    --grid: rgba(255,255,255,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 40px;
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  nav .logo {
+    font-weight: 800; letter-spacing: -0.02em; font-size: 18px;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  nav ul { display: flex; gap: 28px; list-style: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+  nav a:hover { color: var(--ink); }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,45,99,0.18), transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(37,244,238,0.15), transparent 60%),
+                var(--bg);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 70%);
+  }
+  .hero-content {
+    text-align: center; z-index: 2; max-width: 900px; padding: 0 24px;
+  }
+  .pill {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    background: rgba(255,45,99,0.12); color: var(--accent);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid rgba(255,45,99,0.3);
+    animation: fadeUp .8s ease-out;
+  }
+  h1 {
+    font-size: clamp(40px, 7vw, 88px);
+    font-weight: 900; letter-spacing: -0.04em;
+    margin: 20px 0 24px;
+    line-height: 1;
+    animation: fadeUp 1s ease-out .1s backwards;
+  }
+  h1 .gradient {
+    background: linear-gradient(90deg, var(--accent), var(--accent-3), var(--accent-2));
+    background-size: 200% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: gradientShift 6s linear infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .hero p {
+    font-size: clamp(16px, 1.6vw, 20px);
+    color: var(--muted); max-width: 640px; margin: 0 auto 36px;
+    animation: fadeUp 1s ease-out .25s backwards;
+  }
+  .cta {
+    display: inline-flex; gap: 14px; align-items: center;
+    padding: 14px 28px; border-radius: 999px;
+    background: var(--ink); color: var(--bg);
+    font-weight: 700; text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+    animation: fadeUp 1s ease-out .4s backwards;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255,255,255,0.15); }
+  .cta .arrow { display: inline-block; transition: transform .2s; }
+  .cta:hover .arrow { transform: translateX(4px); }
+
+  /* Floating phones in hero */
+  .phones {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  }
+  .phone-float {
+    position: absolute; width: 120px; height: 220px; border-radius: 18px;
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: float 8s ease-in-out infinite;
+  }
+  .phone-float::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      hsl(var(--h, 340) 80% 50%) 0%,
+      hsl(calc(var(--h, 340) + 60) 80% 50%) 100%);
+    opacity: 0.6;
+  }
+  .phone-float:nth-child(1) { top: 10%; left: 8%; --h: 340; animation-delay: 0s; }
+  .phone-float:nth-child(2) { top: 20%; right: 10%; --h: 180; animation-delay: -2s; }
+  .phone-float:nth-child(3) { bottom: 15%; left: 12%; --h: 50; animation-delay: -4s; }
+  .phone-float:nth-child(4) { bottom: 12%; right: 8%; --h: 280; animation-delay: -6s; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-30px) rotate(5deg); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scroll cue */
+  .scroll-cue {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    color: var(--muted); font-size: 12px; letter-spacing: 0.2em;
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(8px);} }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 120px 40px; position: relative; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-tag {
+    color: var(--accent-2); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  h2 {
+    font-size: clamp(32px, 4.5vw, 56px);
+    font-weight: 800; letter-spacing: -0.03em;
+    margin-bottom: 24px; line-height: 1.1;
+  }
+  .lead {
+    font-size: 18px; color: var(--muted); max-width: 640px; margin-bottom: 60px;
+  }
+
+  /* Reveal-on-scroll */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s, transform .8s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ---------- ALGORITHM DEMO ---------- */
+  .algo-demo {
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 800px) {
+    .algo-demo { grid-template-columns: 1fr; }
+  }
+  /* Phone */
+  .phone {
+    width: 280px; height: 540px;
+    background: #000; border-radius: 32px;
+    border: 8px solid #1a1a2e;
+    position: relative; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    margin: 0 auto;
+  }
+  .phone::before {
+    content: ''; position: absolute; top: 8px; left: 50%;
+    transform: translateX(-50%); width: 80px; height: 22px;
+    background: #000; border-radius: 12px; z-index: 10;
+  }
+  .video-card {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    transition: transform .45s cubic-bezier(.7,0,.3,1), opacity .45s;
+  }
+  .video-card.swipe-up { transform: translateY(-100%); opacity: 0; }
+  .video-card.swipe-in { transform: translateY(100%); opacity: 0; transition: none; }
+  .video-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    animation: kenBurns 12s ease-in-out infinite alternate;
+  }
+  @keyframes kenBurns {
+    0%   { transform: scale(1.05) translate(0, 0); }
+    100% { transform: scale(1.18) translate(-3%, 2%); }
+  }
+  .video-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,0.55) 0%,
+      rgba(0,0,0,0) 30%,
+      rgba(0,0,0,0) 55%,
+      rgba(0,0,0,0.85) 100%);
+    pointer-events: none;
+  }
+  .video-progress {
+    position: absolute; top: 36px; left: 16px; right: 16px;
+    height: 2px; background: rgba(255,255,255,0.2); border-radius: 1px; z-index: 4;
+    overflow: hidden;
+  }
+  .video-progress .fill {
+    height: 100%; width: 0%; background: white;
+    animation: playProgress 5s linear infinite;
+  }
+  @keyframes playProgress { 0% { width: 0%; } 100% { width: 100%; } }
+  .video-category {
+    position: absolute; top: 56px; left: 16px; z-index: 4;
+    font-size: 28px; font-weight: 900; letter-spacing: 0.02em;
+    color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    line-height: 1;
+  }
+  .video-category .tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; padding: 3px 8px; border-radius: 4px;
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
+    margin-bottom: 8px; vertical-align: middle;
+  }
+  .video-info {
+    position: absolute; left: 16px; bottom: 18px; right: 70px;
+    z-index: 4; color: white;
+  }
+  .video-info .handle { font-weight: 700; font-size: 14px; }
+  .video-info .caption { font-size: 12px; opacity: 0.9; margin-top: 4px; line-height: 1.3; }
+  .video-actions {
+    position: absolute; right: 12px; bottom: 24px; z-index: 4;
+    display: flex; flex-direction: column; gap: 14px; align-items: center;
+  }
+  .action-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.15);
+    color: white; font-size: 18px; cursor: pointer;
+    transition: transform .2s, background .2s;
+    backdrop-filter: blur(6px);
+  }
+  .action-btn:hover { transform: scale(1.15); }
+  .action-btn.liked { background: var(--accent); border-color: var(--accent); }
+  .like-burst {
+    position: absolute; top: 50%; left: 50%; z-index: 5;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 120px; color: var(--accent);
+    pointer-events: none; opacity: 0;
+    text-shadow: 0 8px 40px rgba(255,45,99,0.6);
+  }
+  .like-burst.pop { animation: heartPop .8s ease-out; }
+  @keyframes heartPop {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    30%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -55%) scale(1); opacity: 0; }
+  }
+
+  /* Algorithm logs */
+  .algo-side h3 {
+    font-size: 24px; margin-bottom: 8px; font-weight: 700;
+  }
+  .algo-side > p {
+    color: var(--muted); margin-bottom: 24px; font-size: 14px;
+  }
+  .signals {
+    display: flex; flex-direction: column; gap: 8px;
+    background: #000; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 16px;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 12px;
+    height: 220px; overflow-y: auto;
+  }
+  .signals::-webkit-scrollbar { width: 4px; }
+  .signals::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+  .signal {
+    display: flex; gap: 10px; align-items: center;
+    padding: 6px 0;
+    animation: slideIn .4s ease-out;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .signal-time { color: var(--muted); width: 50px; flex-shrink: 0; }
+  .signal-type { font-weight: 700; }
+  .signal-type.like { color: var(--accent); }
+  .signal-type.skip { color: var(--accent-3); }
+  .signal-type.watch { color: var(--accent-2); }
+  .signal-detail { color: var(--ink); opacity: 0.8; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .interest-bars {
+    margin-top: 32px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .interest-bar { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .interest-bar .label { width: 100px; color: var(--muted); }
+  .bar-track {
+    flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    border-radius: 3px; width: 0;
+    transition: width .8s cubic-bezier(.7,0,.3,1);
+  }
+  .interest-bar .pct { width: 40px; text-align: right; color: var(--ink); font-weight: 600; }
+
+  /* ---------- ATTENTION DEMO ---------- */
+  .attention-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 800px) {
+    .attention-grid { grid-template-columns: 1fr; }
+  }
+  .stat-card {
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s, border-color .3s;
+  }
+  .stat-card:hover { transform: translateY(-4px); border-color: rgba(255,45,99,0.3); }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  .stat-num {
+    font-size: 64px; font-weight: 900; letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  .stat-label { font-weight: 700; margin: 12px 0 8px; }
+  .stat-desc { color: var(--muted); font-size: 14px; }
+  .stat-source { color: var(--accent-2); font-size: 12px; margin-top: 16px; }
+
+  /* Attention span animation */
+  .attention-viz {
+    margin-top: 80px;
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 40px;
+  }
+  .timeline {
+    display: flex; align-items: flex-end; gap: 10px;
+    margin-top: 40px;
+  }
+  .year-bar {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .bar-zone {
+    width: 100%; height: 200px;
+    display: flex; align-items: flex-end;
+  }
+  .bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--accent-2), rgba(37,244,238,0.15));
+    border-radius: 6px 6px 0 0;
+    transition: height 1.2s cubic-bezier(.7,0,.3,1);
+    height: 0;
+    min-height: 4px;
+    box-shadow: 0 -4px 20px rgba(37,244,238,0.15);
+  }
+  .year-bar .year { font-size: 12px; color: var(--muted); }
+  .year-bar .secs { font-size: 13px; color: var(--ink); font-weight: 700; }
+
+  /* ---------- RESEARCH ---------- */
+  .research-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  @media (max-width: 800px) {
+    .research-grid { grid-template-columns: 1fr; }
+  }
+  .source {
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 28px;
+    transition: border-color .3s;
+  }
+  .source:hover { border-color: var(--accent-2); }
+  .source-meta { color: var(--accent-2); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .source h4 { font-size: 18px; margin: 8px 0 12px; }
+  .source p { color: var(--muted); font-size: 14px; }
+  .source .key-finding {
+    margin-top: 16px; padding: 12px;
+    background: rgba(37,244,238,0.06);
+    border-left: 2px solid var(--accent-2);
+    border-radius: 4px;
+    font-size: 13px; color: var(--ink);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 40px; text-align: center; color: var(--muted); font-size: 13px;
+  }
+
+  /* ---------- INTRO OVERLAY ---------- */
+  .intro {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 24px;
+    transition: opacity 1s ease, visibility 1s;
+  }
+  .intro.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+  .intro-big {
+    font-size: clamp(72px, 14vw, 200px);
+    font-weight: 900; letter-spacing: -0.05em;
+    line-height: 1.2;
+    padding: 0.1em 0.05em 0.2em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-3), var(--accent-2));
+    background-size: 200% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: gradientShift 5s linear infinite, bigIn 1.2s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes bigIn {
+    0% { opacity: 0; transform: translateY(40px) scale(.9); letter-spacing: 0.1em; }
+    100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: -0.05em; }
+  }
+  .intro-sub {
+    margin-top: 32px; max-width: 800px; text-align: center;
+    font-size: clamp(18px, 2.4vw, 28px);
+    color: var(--ink); font-weight: 400;
+    line-height: 1.4; letter-spacing: -0.01em;
+    min-height: 4em;
+  }
+  .intro-sub .cursor {
+    display: inline-block; width: 3px; height: 1em;
+    background: var(--accent-2); vertical-align: middle;
+    margin-left: 4px; transform: translateY(-2px);
+    animation: blink 0.8s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .intro-skip {
+    position: absolute; bottom: 32px; right: 32px;
+    color: var(--muted); font-size: 12px; letter-spacing: 0.15em;
+    text-transform: uppercase; cursor: pointer;
+    background: none; border: 1px solid rgba(255,255,255,0.15);
+    padding: 10px 18px; border-radius: 999px;
+    transition: all .2s;
+  }
+  .intro-skip:hover { color: var(--ink); border-color: rgba(255,255,255,0.4); }
+  body.locked { overflow: hidden; }
+
+  /* ---------- INTERACTIVE FEED CONTROLS ---------- */
+  .controls {
+    display: flex; gap: 12px; margin-top: 16px; margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .ctrl {
+    padding: 10px 16px; border-radius: 999px;
+    background: rgba(255,255,255,0.06); color: var(--ink);
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all .2s;
+  }
+  .ctrl:hover { background: rgba(255,255,255,0.12); }
+  .ctrl.like:hover { background: var(--accent); border-color: var(--accent); }
+  .ctrl.skip:hover { background: var(--accent-3); color: #000; border-color: var(--accent-3); }
+</style>
+</head>
+<body class="locked">
+
+<!-- INTRO OVERLAY -->
+<div class="intro" id="intro">
+  <div class="intro-big">Hey You.</div>
+  <div class="intro-sub" id="introSub"><span class="cursor"></span></div>
+  <button class="intro-skip" onclick="endIntro()">Skip ↵</button>
+</div>
+
+<nav>
+  <div class="logo">⚡ Inside the Feed</div>
+  <ul>
+    <li><a href="#algorithm">Algorithm</a></li>
+    <li><a href="#cognition">Cognition</a></li>
+    <li><a href="#research">Research</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="phones">
+    <div class="phone-float"></div>
+    <div class="phone-float"></div>
+    <div class="phone-float"></div>
+    <div class="phone-float"></div>
+  </div>
+  <div class="hero-content">
+    <span class="pill">An Anthropology Portfolio Project</span>
+    <h1>Inside the <span class="gradient">Feed</span></h1>
+    <p>The cultural and cognitive impact of short-form video, visualized. See how the algorithm learns you, and what it's quietly rewiring along the way.</p>
+    <a href="#algorithm" class="cta">Start the demo <span class="arrow">→</span></a>
+  </div>
+  <div class="scroll-cue">SCROLL ↓</div>
+</section>
+
+<!-- ALGORITHM SECTION -->
+<section id="algorithm">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Chapter 01 · How it learns</div>
+      <h2>The algorithm doesn't<br/>watch the video. It watches <em>you.</em></h2>
+      <p class="lead">Every micro-action is a signal: a pause, a re-watch, a swipe at the 0.4 second mark. Try the feed below and watch its model of you update in real time.</p>
+    </div>
+
+    <div class="algo-demo reveal">
+      <div class="phone">
+        <div class="video-card" id="videoCard">
+          <div class="video-bg" id="videoBg"></div>
+          <div class="video-progress"><div class="fill"></div></div>
+          <div class="video-category" id="videoCategory">
+            <span class="tag" id="videoTag">FOR YOU</span><br/>
+            <span id="videoLabel">DANCE</span>
+          </div>
+          <div class="video-info">
+            <div class="handle" id="videoHandle">@dancecore</div>
+            <div class="caption" id="videoCaption">trending sound · 0:14</div>
+          </div>
+          <div class="video-actions">
+            <button class="action-btn" data-act="like" id="likeBtn">♡</button>
+            <button class="action-btn" data-act="comment">💬</button>
+            <button class="action-btn" data-act="share" id="shareBtn">↗</button>
+          </div>
+          <div class="like-burst" id="likeBurst">♥</div>
+        </div>
+      </div>
+
+      <div class="algo-side">
+        <h3>Real-time signals</h3>
+        <p>Tap the buttons below to interact like a real user. Watch your "interest profile" update.</p>
+
+        <div class="controls">
+          <button class="ctrl like" onclick="signal('like')">♡ Like</button>
+          <button class="ctrl skip" onclick="signal('skip')">⏭ Skip fast</button>
+          <button class="ctrl" onclick="signal('rewatch')">↻ Rewatch</button>
+          <button class="ctrl" onclick="signal('share')">↗ Share</button>
+        </div>
+
+        <div class="signals" id="signals">
+          <div class="signal">
+            <span class="signal-time">0.0s</span>
+            <span class="signal-type watch">WATCH</span>
+            <span class="signal-detail">video loaded · model: cold start</span>
+          </div>
+        </div>
+
+        <div class="interest-bars" id="bars">
+          <div class="interest-bar">
+            <span class="label">Dance</span>
+            <div class="bar-track"><div class="bar-fill" data-cat="dance" style="width:20%"></div></div>
+            <span class="pct" data-pct="dance">20%</span>
+          </div>
+          <div class="interest-bar">
+            <span class="label">Study</span>
+            <div class="bar-track"><div class="bar-fill" data-cat="study" style="width:20%"></div></div>
+            <span class="pct" data-pct="study">20%</span>
+          </div>
+          <div class="interest-bar">
+            <span class="label">Food</span>
+            <div class="bar-track"><div class="bar-fill" data-cat="food" style="width:20%"></div></div>
+            <span class="pct" data-pct="food">20%</span>
+          </div>
+          <div class="interest-bar">
+            <span class="label">Gaming</span>
+            <div class="bar-track"><div class="bar-fill" data-cat="gaming" style="width:20%"></div></div>
+            <span class="pct" data-pct="gaming">20%</span>
+          </div>
+          <div class="interest-bar">
+            <span class="label">Fitness</span>
+            <div class="bar-track"><div class="bar-fill" data-cat="fitness" style="width:20%"></div></div>
+            <span class="pct" data-pct="fitness">20%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COGNITION SECTION -->
+<section id="cognition" style="background: linear-gradient(180deg, var(--bg), var(--bg-2));">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Chapter 02 · The cost</div>
+      <h2>What 90 minutes a day<br/>does to your brain.</h2>
+      <p class="lead">The same design that makes the feed addictive is reshaping attention, executive function, and our tolerance for slow information. The numbers below are pulled from peer-reviewed studies in my bibliography.</p>
+    </div>
+
+    <div class="attention-grid">
+      <div class="stat-card reveal">
+        <div class="stat-num" data-target="64">0%</div>
+        <div class="stat-label">Increase in academic procrastination</div>
+        <div class="stat-desc">Among undergraduates with high short-form video use, mediated by reduced attentional control.</div>
+        <div class="stat-source">Xie et al., 2023</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num" data-target="38">0%</div>
+        <div class="stat-label">Drop in sustained attention</div>
+        <div class="stat-desc">Heavy users showed measurable declines in executive attention and self-control on cognitive tasks.</div>
+        <div class="stat-source">Yan et al., 2024</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num" data-target="2.7">0×</div>
+        <div class="stat-label">Higher anxiety scores</div>
+        <div class="stat-desc">Meta-analysis across multiple studies linking heavy short-form use to poorer mental-health outcomes.</div>
+        <div class="stat-source">Nguyen et al., 2025</div>
+      </div>
+    </div>
+
+    <!-- Attention span shrinking timeline -->
+    <div class="attention-viz reveal">
+      <div class="section-tag" style="color: var(--accent);">Average human attention span</div>
+      <h3 style="font-size: 24px; margin-top: 8px;">From 12 seconds (2000) to 8 seconds (2015) to ~47 seconds of focused work before a digital interruption (2024).</h3>
+      <div class="timeline" id="timeline">
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="100"></div></div><div class="secs">12s</div><div class="year">2000</div></div>
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="83"></div></div><div class="secs">10s</div><div class="year">2008</div></div>
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="66"></div></div><div class="secs">8s</div><div class="year">2015</div></div>
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="50"></div></div><div class="secs">6s</div><div class="year">2019</div></div>
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="33"></div></div><div class="secs">4s</div><div class="year">2022</div></div>
+        <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="20"></div></div><div class="secs">2.5s</div><div class="year">2025</div></div>
+      </div>
+      <p style="color: var(--muted); margin-top: 24px; font-size: 14px;">Note: data points are illustrative composites drawn from the cited literature on short-form media exposure and attentional decline.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Chapter 03 · The evidence</div>
+      <h2>Three peer-reviewed sources<br/>anchoring this project.</h2>
+      <p class="lead">Each card connects an empirical finding to the anthropological argument: digital environments are now a primary force shaping how humans think, behave, and form culture.</p>
+    </div>
+
+    <div class="research-grid">
+      <div class="source reveal">
+        <div class="source-meta">Frontiers in Psychology · 2023</div>
+        <h4>Xie et al.: Short-form video addiction & academic procrastination</h4>
+        <p>A moderated mediation model showing how attentional control links short-form media use to declining academic performance among undergraduates.</p>
+        <div class="key-finding">→ Frequent users prefer immediate rewards, weakening delayed gratification, a measurable behavioral shift.</div>
+      </div>
+      <div class="source reveal">
+        <div class="source-meta">Frontiers in Psychology · 2024</div>
+        <h4>Yan et al.: Mobile short-video use & executive function</h4>
+        <p>Experimental and observational data showing decreased self-control and impaired executive attention with frequent short-form exposure.</p>
+        <div class="key-finding">→ Habitual task-switching weakens the brain's ability to engage in deep, sustained thinking.</div>
+      </div>
+      <div class="source reveal">
+        <div class="source-meta">Computers in Human Behavior · 2025</div>
+        <h4>Nguyen et al.: Feeds, feelings, and focus (meta-analysis)</h4>
+        <p>Synthesizes findings across studies: reduced attention span, lower cognitive performance, and elevated anxiety from heavy short-form use.</p>
+        <div class="key-finding">→ Effects are widespread and consistent, evidence of a broad cultural shift in how information is consumed.</div>
+      </div>
+      <div class="source reveal" style="background: linear-gradient(135deg, rgba(255,45,99,0.1), rgba(37,244,238,0.05)); border-color: rgba(255,45,99,0.3);">
+        <div class="source-meta" style="color: var(--accent);">Anthropological Lens</div>
+        <h4>Why this matters for cultural anthropology</h4>
+        <p>Short-form platforms aren't neutral tools. They're cultural environments. The patterns above reveal how humans adapt cognitively and socially to technologies designed for engagement, not understanding.</p>
+        <div class="key-finding" style="border-color: var(--accent); background: rgba(255,45,99,0.06);">→ Culture is no longer just transmitted through ritual or kinship. It's increasingly transmitted through algorithmic feeds.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Inside the Feed · Andy Metgher · Anthropology Portfolio Project · Spring 2026
+</footer>
+
+<script>
+  /* ---------- Intro typewriter ---------- */
+  // Always start the user at the top of the page, no matter the prior scroll
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
+  const introSub = document.getElementById('introSub');
+  const introEl = document.getElementById('intro');
+  const introText = "have you ever wondered how the algorithm actually works, or what it's quietly doing to your brain?";
+  let introIdx = 0;
+  let introTimer = null;
+  let introDone = false;
+
+  function typeIntro() {
+    if (introIdx < introText.length) {
+      introSub.innerHTML = introText.slice(0, introIdx + 1) + '<span class="cursor"></span>';
+      introIdx++;
+      // variable speed feels more natural with slight pauses on punctuation
+      const ch = introText[introIdx - 1];
+      const delay = (ch === ',') ? 240 : (ch === '?' ? 400 : 32 + Math.random() * 30);
+      introTimer = setTimeout(typeIntro, delay);
+    } else {
+      // hold a beat, then fade out
+      setTimeout(endIntro, 1400);
+    }
+  }
+
+  function endIntro() {
+    if (introDone) return;
+    introDone = true;
+    clearTimeout(introTimer);
+    window.scrollTo(0, 0);
+    introEl.classList.add('gone');
+    document.body.classList.remove('locked');
+    setTimeout(() => introEl.remove(), 1100);
+  }
+
+  // start typing after the "Hey You." entrance animation finishes
+  window.addEventListener('load', () => {
+    setTimeout(typeIntro, 1100);
+  });
+
+  /* ---------- Reveal on scroll ---------- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+
+        // Animate stat numbers
+        if (e.target.querySelector('.stat-num')) {
+          e.target.querySelectorAll('.stat-num').forEach(animateNum);
+        }
+        // Animate timeline
+        if (e.target.querySelector('.timeline')) {
+          e.target.querySelectorAll('.bar').forEach(b => {
+            setTimeout(() => b.style.height = b.dataset.h + '%', 100);
+          });
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  function animateNum(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.textContent.replace(/[\d.]/g, '').trim() || '%';
+    let current = 0;
+    const step = target / 60;
+    const tick = () => {
+      current += step;
+      if (current >= target) {
+        el.textContent = target + suffix;
+      } else {
+        el.textContent = (target % 1 === 0 ? Math.floor(current) : current.toFixed(1)) + suffix;
+        requestAnimationFrame(tick);
+      }
+    };
+    tick();
+  }
+
+  /* ---------- Feed data ---------- */
+  // Stable Unsplash CDN photo IDs by category. Falls back to a colored gradient if image fails.
+  const videos = [
+    { cat: 'dance',  label: 'DANCE',  handle: '@dancecore',   caption: 'trending sound · 0:14',
+      img: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&h=1100&fit=crop&q=80',
+      fallback: 'linear-gradient(135deg, #ff2d63, #ff6b9d)' },
+    { cat: 'study',  label: 'STUDY',  handle: '@studyhabits', caption: '3 study tips that changed my GPA',
+      img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=1100&fit=crop&q=80',
+      fallback: 'linear-gradient(135deg, #25f4ee, #00b4d8)' },
+    { cat: 'food',   label: 'FOOD',   handle: '@quickcooks',  caption: '15-second pasta hack',
+      img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=1100&fit=crop&q=80',
+      fallback: 'linear-gradient(135deg, #fffc00, #ff8c00)' },
+    { cat: 'gaming', label: 'GAMING', handle: '@gamerclips',  caption: 'the play of the year',
+      img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=1100&fit=crop&q=80',
+      fallback: 'linear-gradient(135deg, #9d4edd, #ff2d63)' },
+    { cat: 'fitness', label: 'FITNESS', handle: '@fitsessions', caption: '5-minute morning workout · 0:22',
+      img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=1100&fit=crop&q=80',
+      fallback: 'linear-gradient(135deg, #06ffa5, #25f4ee)' }
+  ];
+
+  let currentVideo = 0;
+  let hasInteracted = false;
+  const videoCard = document.getElementById('videoCard');
+  const videoBg = document.getElementById('videoBg');
+  const videoLabelEl = document.getElementById('videoLabel');
+  const videoHandleEl = document.getElementById('videoHandle');
+  const videoCaptionEl = document.getElementById('videoCaption');
+  const likeBtn = document.getElementById('likeBtn');
+  const likeBurst = document.getElementById('likeBurst');
+
+  function loadVideo(i) {
+    const v = videos[i];
+    videoLabelEl.textContent = v.label;
+    videoHandleEl.textContent = v.handle;
+    videoCaptionEl.textContent = v.caption;
+    likeBtn.classList.remove('liked');
+
+    // Try the image; if it errors, fall back to gradient
+    const probe = new Image();
+    probe.onload = () => {
+      videoBg.style.background = `url("${v.img}") center/cover no-repeat`;
+    };
+    probe.onerror = () => {
+      videoBg.style.background = v.fallback;
+    };
+    videoBg.style.background = v.fallback; // show fallback immediately
+    probe.src = v.img;
+  }
+
+  function nextVideo() {
+    videoCard.classList.add('swipe-up');
+    setTimeout(() => {
+      currentVideo = (currentVideo + 1) % videos.length;
+      videoCard.classList.remove('swipe-up');
+      videoCard.classList.add('swipe-in');
+      loadVideo(currentVideo);
+      // force reflow then remove class to trigger slide-in
+      void videoCard.offsetWidth;
+      videoCard.classList.remove('swipe-in');
+    }, 450);
+  }
+
+  function popHeart() {
+    likeBurst.classList.remove('pop');
+    void likeBurst.offsetWidth;
+    likeBurst.classList.add('pop');
+  }
+
+  /* ---------- Signal log + interest bars ---------- */
+  let t = 0;
+  const signalsEl = document.getElementById('signals');
+  let interests = { dance: 20, study: 20, food: 20, gaming: 20, fitness: 20 };
+
+  function logSignal(type, detail) {
+    t += Math.random() * 1.4 + 0.3;
+    const s = document.createElement('div');
+    s.className = 'signal';
+    s.innerHTML = `<span class="signal-time">${t.toFixed(1)}s</span>
+                   <span class="signal-type ${type.toLowerCase()}">${type}</span>
+                   <span class="signal-detail">${detail}</span>`;
+    signalsEl.prepend(s);
+    while (signalsEl.children.length > 20) signalsEl.lastChild.remove();
+  }
+
+  function updateBars() {
+    const total = Object.values(interests).reduce((a,b) => a+b, 0);
+    Object.keys(interests).forEach(k => {
+      const pct = Math.round((interests[k] / total) * 100);
+      document.querySelector(`.bar-fill[data-cat="${k}"]`).style.width = pct + '%';
+      document.querySelector(`.pct[data-pct="${k}"]`).textContent = pct + '%';
+    });
+  }
+
+  function signal(action) {
+    hasInteracted = true;
+    const v = videos[currentVideo];
+    const cat = v.cat;
+
+    if (action === 'like') {
+      interests[cat] += 25;
+      likeBtn.classList.add('liked');
+      popHeart();
+      logSignal('LIKE', `+25 weight on "${cat}" (${v.handle})`);
+      updateBars();
+      setTimeout(nextVideo, 1100);
+    } else if (action === 'skip') {
+      interests[cat] = Math.max(2, interests[cat] - 15);
+      logSignal('SKIP', `-15 weight on "${cat}", swiped at 0.4s`);
+      updateBars();
+      nextVideo();
+    } else if (action === 'rewatch') {
+      interests[cat] += 18;
+      logSignal('WATCH', `rewatched "${cat}", strong signal`);
+      updateBars();
+      setTimeout(nextVideo, 1100);
+    } else if (action === 'share') {
+      interests[cat] += 35;
+      popHeart();
+      logSignal('LIKE', `shared "${cat}", strongest signal (+35)`);
+      updateBars();
+      setTimeout(nextVideo, 1100);
+    }
+  }
+
+  /* Phone in-screen buttons */
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const act = btn.dataset.act;
+      if (act === 'like') signal('like');
+      else if (act === 'share') signal('share');
+      else if (act === 'comment') signal('rewatch');
+    });
+  });
+
+  /* Auto-advance occasionally, but only after the user has interacted at least once */
+  setInterval(() => {
+    if (!hasInteracted) return;
+    if (Math.random() < 0.18) {
+      const acts = ['rewatch','skip','like'];
+      signal(acts[Math.floor(Math.random()*acts.length)]);
+    }
+  }, 4500);
+
+  // Initial load
+  loadVideo(currentVideo);
+</script>
+</body>
+</html>

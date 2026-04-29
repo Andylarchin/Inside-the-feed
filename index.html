@@ -671,6 +671,111 @@
   .profile-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.15); }
   .profile-btn.ghost { background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.15); }
   .profile-btn.ghost:hover { color: var(--ink); border-color: rgba(255,255,255,0.4); }
+
+  /* ---------- SESSION REVEAL (the meta-twist) ---------- */
+  .session-reveal {
+    background: linear-gradient(180deg, var(--bg-2), var(--bg));
+    padding: 140px 40px;
+    border-top: 1px solid rgba(255,45,99,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .session-reveal::before {
+    content: 'CAUGHT YOU';
+    position: absolute; top: 36px; right: 40px;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.25em; color: var(--accent);
+    opacity: 0.5;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .session-reveal h2 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-3));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .session-grid {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 800px) { .session-grid { grid-template-columns: 1fr; } }
+
+  .session-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .session-stat {
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .session-stat .label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .session-stat .value {
+    margin-top: 10px; font-size: 36px; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1;
+    font-family: "SF Mono", Monaco, monospace;
+    color: var(--accent-2);
+  }
+  .session-stat .sub {
+    margin-top: 8px; font-size: 12px; color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .session-log {
+    background: #000;
+    border: 1px solid rgba(255,45,99,0.25);
+    border-radius: 12px;
+    padding: 18px 20px;
+    height: 380px;
+    overflow-y: auto;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 12px;
+    box-shadow: inset 0 0 60px rgba(255,45,99,0.05);
+  }
+  .session-log::-webkit-scrollbar { width: 4px; }
+  .session-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+  .session-event {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    animation: slideIn .35s ease-out;
+  }
+  .session-event:last-child { border-bottom: none; }
+  .ev-time { color: var(--muted); width: 56px; flex-shrink: 0; }
+  .ev-type { font-weight: 700; width: 64px; flex-shrink: 0; }
+  .ev-type.enter { color: var(--accent-2); }
+  .ev-type.view  { color: var(--accent-2); }
+  .ev-type.hover { color: var(--accent-3); }
+  .ev-type.click { color: var(--accent); }
+  .ev-type.scroll{ color: var(--muted); }
+  .ev-type.dwell { color: var(--accent-3); }
+  .ev-type.idle  { color: var(--muted); }
+  .ev-detail { color: var(--ink); opacity: 0.85; flex: 1; word-break: break-word; }
+  .session-log .placeholder {
+    color: var(--muted); font-style: italic; padding: 14px 0;
+  }
+
+  .session-closer {
+    margin-top: 60px;
+    padding: 28px 32px;
+    background: linear-gradient(90deg, rgba(255,45,99,0.12), rgba(37,244,238,0.04));
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    font-size: 18px; line-height: 1.5;
+    max-width: 820px;
+  }
+  .session-closer em {
+    font-style: normal; font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
 </style>
 </head>
 <body class="locked">
@@ -890,6 +995,50 @@
   </div>
 </section>
 
+<!-- SESSION REVEAL (the meta-twist) -->
+<section class="session-reveal" id="sessionReveal">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag" style="color: var(--accent);">Plot twist</div>
+      <h2>While you were learning about the algorithm,<br/>this page was <em>quietly profiling you.</em></h2>
+      <p class="lead">Every scroll, hover, and click was logged. Same playbook as TikTok, just made visible. Sound familiar?</p>
+    </div>
+
+    <div class="session-grid reveal">
+      <div class="session-stats">
+        <div class="session-stat">
+          <div class="label">Time on page</div>
+          <div class="value" id="ssTime">0:00</div>
+          <div class="sub">Average TikTok session: 95 minutes</div>
+        </div>
+        <div class="session-stat">
+          <div class="label">Sections viewed</div>
+          <div class="value" id="ssSections">0/4</div>
+          <div class="sub">Each entry timed and logged</div>
+        </div>
+        <div class="session-stat">
+          <div class="label">Scroll depth</div>
+          <div class="value" id="ssScroll">0%</div>
+          <div class="sub">Max reached so far</div>
+        </div>
+        <div class="session-stat">
+          <div class="label">Behavioral signals</div>
+          <div class="value" id="ssSignals">0</div>
+          <div class="sub">Captured this session</div>
+        </div>
+      </div>
+
+      <div class="session-log" id="sessionLog">
+        <div class="placeholder">Replay starts when you reach this section.</div>
+      </div>
+    </div>
+
+    <div class="session-closer reveal">
+      You came here to read about how the algorithm watches users. <em>This page watched you back.</em> Every digital environment runs the same playbook. The only difference is, here, we showed you the receipts.
+    </div>
+  </div>
+</section>
+
 <!-- CONCLUSION -->
 <section class="conclusion">
   <div class="container">
@@ -1008,6 +1157,172 @@
   window.addEventListener('load', () => {
     setTimeout(typeIntro, 1100);
   });
+
+  /* ---------- Session tracking (the meta-twist) ---------- */
+  const sessionStart = Date.now();
+  const sessionEvents = [];
+  const sectionsViewed = new Set();
+  let maxScrollPct = 0;
+  let pageSignalCount = 0;
+  let sessionRevealed = false;
+  let lastScrollMilestone = 0;
+  let lastActivity = Date.now();
+
+  const SECTION_LABELS = {
+    'algorithm': 'Algorithm demo',
+    'cognition': 'Cognitive cost',
+    'research':  'Research evidence',
+    'sessionReveal': 'Plot twist'
+  };
+
+  function fmtMMSS(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${Math.floor(s/60)}:${(s%60).toString().padStart(2, '0')}`;
+  }
+
+  function logSessionEvent(type, detail) {
+    const elapsed = (Date.now() - sessionStart) / 1000;
+    const ev = { t: elapsed, type, detail };
+    sessionEvents.push(ev);
+    pageSignalCount++;
+    if (sessionRevealed) appendSessionEvent(ev);
+  }
+
+  function updateLiveStats() {
+    const elapsed = Date.now() - sessionStart;
+    const tEl = document.getElementById('ssTime');
+    const scEl = document.getElementById('ssScroll');
+    const seEl = document.getElementById('ssSections');
+    const sgEl = document.getElementById('ssSignals');
+    if (tEl) tEl.textContent = fmtMMSS(elapsed);
+    if (scEl) scEl.textContent = maxScrollPct + '%';
+    if (seEl) seEl.textContent = sectionsViewed.size + '/4';
+    if (sgEl) sgEl.textContent = pageSignalCount;
+  }
+  setInterval(updateLiveStats, 500);
+
+  // Initial event
+  logSessionEvent('ENTER', 'page loaded · "Inside the Feed"');
+
+  // Scroll depth + milestones
+  window.addEventListener('scroll', () => {
+    lastActivity = Date.now();
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH <= 0) return;
+    const pct = Math.min(100, Math.round((window.scrollY / docH) * 100));
+    if (pct > maxScrollPct) maxScrollPct = pct;
+    for (const m of [25, 50, 75, 100]) {
+      if (pct >= m && lastScrollMilestone < m) {
+        lastScrollMilestone = m;
+        logSessionEvent('SCROLL', `${m}% scroll depth reached`);
+      }
+    }
+  }, { passive: true });
+
+  // Section view tracking
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      const id = e.target.id;
+      const label = SECTION_LABELS[id];
+      if (!label) return;
+      if (e.isIntersecting && !sectionsViewed.has(id)) {
+        sectionsViewed.add(id);
+        logSessionEvent('VIEW', `entered "${label}" section`);
+      }
+    });
+  }, { threshold: 0.25 });
+  ['algorithm','cognition','research','sessionReveal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) sectionObserver.observe(el);
+  });
+
+  // Hover/dwell on stat cards
+  document.querySelectorAll('.stat-card').forEach((card) => {
+    let entered = null;
+    card.addEventListener('mouseenter', () => { entered = Date.now(); lastActivity = Date.now(); });
+    card.addEventListener('mouseleave', () => {
+      if (!entered) return;
+      const ms = Date.now() - entered;
+      if (ms > 800) {
+        const label = card.querySelector('.stat-label')?.textContent?.trim() || 'stat card';
+        logSessionEvent('DWELL', `lingered on "${label}" for ${(ms/1000).toFixed(1)}s`);
+      }
+      entered = null;
+    });
+  });
+
+  // Research link clicks
+  document.querySelectorAll('a.source').forEach(link => {
+    link.addEventListener('click', () => {
+      const title = link.querySelector('h4')?.textContent || 'research paper';
+      const short = title.length > 48 ? title.substring(0, 48) + '...' : title;
+      logSessionEvent('CLICK', `opened paper · "${short}"`);
+    });
+  });
+
+  // Algorithm-demo control clicks (meta-level signal, only one per click)
+  document.querySelectorAll('.controls .ctrl').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.textContent.trim();
+      logSessionEvent('CLICK', `feed control · "${action}"`);
+    });
+  });
+
+  // Idle detection: log if inactive for 8s after first interaction
+  setInterval(() => {
+    if (Date.now() - lastActivity > 8000 && pageSignalCount > 1) {
+      const lastEv = sessionEvents[sessionEvents.length - 1];
+      if (lastEv && lastEv.type !== 'IDLE') {
+        logSessionEvent('IDLE', 'no activity detected · still watching');
+      }
+      lastActivity = Date.now();
+    }
+  }, 4000);
+  ['mousemove','keydown','touchstart'].forEach(evt =>
+    window.addEventListener(evt, () => { lastActivity = Date.now(); }, { passive: true })
+  );
+
+  // Render the replay when the session-reveal section enters viewport
+  const sessionLogEl = () => document.getElementById('sessionLog');
+  function appendSessionEvent(ev) {
+    const log = sessionLogEl();
+    if (!log) return;
+    const div = document.createElement('div');
+    div.className = 'session-event';
+    div.innerHTML = `
+      <span class="ev-time">${ev.t.toFixed(1)}s</span>
+      <span class="ev-type ${ev.type.toLowerCase()}">${ev.type}</span>
+      <span class="ev-detail">${ev.detail}</span>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function replaySessionLog() {
+    const log = sessionLogEl();
+    if (!log) return;
+    log.innerHTML = ''; // clear placeholder
+    const snapshot = [...sessionEvents];
+    let i = 0;
+    function tick() {
+      if (i >= snapshot.length) return;
+      appendSessionEvent(snapshot[i]);
+      i++;
+      setTimeout(tick, 90);
+    }
+    tick();
+  }
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !sessionRevealed) {
+        sessionRevealed = true;
+        replaySessionLog();
+      }
+    });
+  }, { threshold: 0.2 });
+  const sessionEl = document.getElementById('sessionReveal');
+  if (sessionEl) revealObserver.observe(sessionEl);
 
   /* ---------- Reveal on scroll ---------- */
   const observer = new IntersectionObserver((entries) => {

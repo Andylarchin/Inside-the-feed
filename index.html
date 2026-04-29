@@ -397,13 +397,17 @@
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px; padding: 28px;
     transition: border-color .3s;
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 5;
+    row-gap: 14px;
   }
   .source:hover { border-color: var(--accent-2); }
   .source-meta { color: var(--accent-2); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-  .source h4 { font-size: 18px; margin: 8px 0 12px; }
-  .source p { color: var(--muted); font-size: 14px; }
+  .source h4 { font-size: 18px; margin: 0; line-height: 1.3; }
+  .source p { color: var(--muted); font-size: 14px; margin: 0; }
   .source .key-finding {
-    margin-top: 16px; padding: 12px;
+    margin: 0; padding: 12px;
     background: rgba(37,244,238,0.06);
     border-left: 2px solid var(--accent-2);
     border-radius: 4px;
@@ -480,6 +484,193 @@
   .ctrl:hover { background: rgba(255,255,255,0.12); }
   .ctrl.like:hover { background: var(--accent); border-color: var(--accent); }
   .ctrl.skip:hover { background: var(--accent-3); color: #000; border-color: var(--accent-3); }
+  .ctrl.reset { background: transparent; opacity: 0.7; }
+  .ctrl.reset:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+
+  /* Algorithm read-out badge */
+  .read-out {
+    margin-top: 28px; padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(255,45,99,0.12), rgba(37,244,238,0.08));
+    border: 1px solid rgba(255,45,99,0.25);
+    border-radius: 12px;
+    font-size: 13px;
+    transition: opacity .3s, transform .3s;
+  }
+  .read-out .label { color: var(--accent); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
+  .read-out .verdict { color: var(--ink); font-weight: 600; }
+  .read-out.empty .verdict { color: var(--muted); font-weight: 400; font-style: italic; }
+
+  /* So-what / conclusion section */
+  .conclusion {
+    background: linear-gradient(180deg, var(--bg-2), #000);
+    padding: 140px 40px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .conclusion h2 { max-width: 900px; }
+  .conclusion .punch {
+    margin-top: 60px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 800px) { .conclusion .punch { grid-template-columns: 1fr; } }
+  .punch-card {
+    padding: 28px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+  }
+  .punch-card .num {
+    font-size: 14px; font-weight: 800; color: var(--accent-2);
+    letter-spacing: 0.15em;
+  }
+  .punch-card h4 { font-size: 22px; margin: 12px 0; font-weight: 700; }
+  .punch-card p { color: var(--muted); font-size: 15px; }
+  .closing-quote {
+    margin-top: 80px; max-width: 800px;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+  .closing-quote em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* Research card link styling */
+  a.source { text-decoration: none; color: inherit; }
+  .view-paper {
+    color: var(--accent-2); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    align-self: end;
+  }
+  .view-paper.placeholder { visibility: hidden; }
+  a.source:hover .view-paper { color: var(--accent); }
+
+  /* Engagement intensity meter (appears after escalation) */
+  .intensity {
+    display: none; margin-top: 18px;
+    align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent);
+    animation: pulseIn .5s ease-out;
+  }
+  .intensity.show { display: flex; }
+  .intensity .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  @keyframes pulseIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+
+  /* ---------- PROFILE MODAL (the reveal) ---------- */
+  .profile-modal {
+    position: fixed; inset: 0; z-index: 5000;
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .profile-modal.active { display: flex; animation: modalFadeIn .5s ease-out; }
+  .profile-modal::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+  }
+  @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .profile-card {
+    position: relative; z-index: 1;
+    max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto;
+    background: linear-gradient(180deg, #15151f, #0a0a0f);
+    border: 1px solid rgba(255,45,99,0.4);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 40px 120px rgba(255,45,99,0.25), 0 0 0 1px rgba(255,255,255,0.03);
+    animation: cardRise .7s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes cardRise {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .profile-card::before {
+    content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-3), var(--accent-2));
+    border-radius: 24px 24px 0 0;
+  }
+  .profile-tag {
+    color: var(--accent); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .profile-card h2 {
+    font-size: clamp(28px, 4vw, 44px); margin-bottom: 16px; letter-spacing: -0.03em;
+  }
+  .profile-card h2 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .profile-card .sub {
+    color: var(--muted); font-size: 15px; margin-bottom: 36px;
+  }
+  .profile-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 700px) {
+    .profile-grid { grid-template-columns: 1fr; }
+    .profile-card { padding: 32px 24px; }
+  }
+  .profile-col {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .profile-col.right { border-color: rgba(255,45,99,0.25); background: rgba(255,45,99,0.04); }
+  .col-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 16px;
+    color: var(--muted);
+  }
+  .profile-col.right .col-label { color: var(--accent); }
+  .profile-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .profile-col li {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; font-size: 14px;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .profile-col li:last-child { border-bottom: none; padding-bottom: 0; }
+  .profile-col li span:first-child { color: var(--muted); }
+  .profile-col li strong {
+    color: var(--ink); font-weight: 700;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 13px;
+  }
+  .profile-col.right li strong { color: var(--accent); }
+  .profile-col.right li strong.high { color: #ff6b9d; }
+  .profile-col.right li strong.low { color: var(--accent-3); }
+  .profile-card .closer {
+    font-size: 18px; line-height: 1.4; margin-bottom: 28px;
+    padding: 18px 22px; border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,45,99,0.08), rgba(37,244,238,0.04));
+    border-left: 3px solid var(--accent);
+  }
+  .profile-card .closer em {
+    font-style: normal; font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .profile-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .profile-btn {
+    padding: 14px 24px; border-radius: 999px;
+    background: var(--ink); color: var(--bg);
+    border: none; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: transform .2s, box-shadow .2s;
+  }
+  .profile-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.15); }
+  .profile-btn.ghost { background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.15); }
+  .profile-btn.ghost:hover { color: var(--ink); border-color: rgba(255,255,255,0.4); }
 </style>
 </head>
 <body class="locked">
@@ -557,6 +748,7 @@
           <button class="ctrl skip" onclick="signal('skip')">⏭ Skip fast</button>
           <button class="ctrl" onclick="signal('rewatch')">↻ Rewatch</button>
           <button class="ctrl" onclick="signal('share')">↗ Share</button>
+          <button class="ctrl reset" onclick="resetFeed()">⟲ Reset</button>
         </div>
 
         <div class="signals" id="signals">
@@ -593,6 +785,16 @@
             <div class="bar-track"><div class="bar-fill" data-cat="fitness" style="width:20%"></div></div>
             <span class="pct" data-pct="fitness">20%</span>
           </div>
+        </div>
+
+        <div class="read-out empty" id="readOut">
+          <span class="label">Algorithm's read on you</span>
+          <span class="verdict" id="verdict">Interact with the feed to see your inferred profile.</span>
+        </div>
+
+        <div class="intensity" id="intensity">
+          <span class="dot"></span>
+          <span>Engagement intensity: high · feed is adapting</span>
         </div>
       </div>
     </div>
@@ -632,7 +834,7 @@
     <!-- Attention span shrinking timeline -->
     <div class="attention-viz reveal">
       <div class="section-tag" style="color: var(--accent);">Average human attention span</div>
-      <h3 style="font-size: 24px; margin-top: 8px;">From 12 seconds (2000) to 8 seconds (2015) to ~47 seconds of focused work before a digital interruption (2024).</h3>
+      <h3 style="font-size: 24px; margin-top: 8px;">From roughly 12 seconds in 2000, to 8 seconds by 2015, down to about 2.5 seconds by 2025.</h3>
       <div class="timeline" id="timeline">
         <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="100"></div></div><div class="secs">12s</div><div class="year">2000</div></div>
         <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="83"></div></div><div class="secs">10s</div><div class="year">2008</div></div>
@@ -641,7 +843,7 @@
         <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="33"></div></div><div class="secs">4s</div><div class="year">2022</div></div>
         <div class="year-bar"><div class="bar-zone"><div class="bar" data-h="20"></div></div><div class="secs">2.5s</div><div class="year">2025</div></div>
       </div>
-      <p style="color: var(--muted); margin-top: 24px; font-size: 14px;">Note: data points are illustrative composites drawn from the cited literature on short-form media exposure and attentional decline.</p>
+      <p style="color: var(--muted); margin-top: 24px; font-size: 14px;">Note: estimated attention patterns based on the cited literature. Specific values are illustrative composites of multiple studies, not direct measurements from a single source.</p>
     </div>
   </div>
 </section>
@@ -656,33 +858,110 @@
     </div>
 
     <div class="research-grid">
-      <div class="source reveal">
+      <a class="source reveal" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10756502/" target="_blank" rel="noopener">
         <div class="source-meta">Frontiers in Psychology · 2023</div>
         <h4>Xie et al.: Short-form video addiction & academic procrastination</h4>
         <p>A moderated mediation model showing how attentional control links short-form media use to declining academic performance among undergraduates.</p>
         <div class="key-finding">→ Frequent users prefer immediate rewards, weakening delayed gratification, a measurable behavioral shift.</div>
-      </div>
-      <div class="source reveal">
+        <span class="view-paper">View paper ↗</span>
+      </a>
+      <a class="source reveal" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11236742/" target="_blank" rel="noopener">
         <div class="source-meta">Frontiers in Psychology · 2024</div>
         <h4>Yan et al.: Mobile short-video use & executive function</h4>
         <p>Experimental and observational data showing decreased self-control and impaired executive attention with frequent short-form exposure.</p>
         <div class="key-finding">→ Habitual task-switching weakens the brain's ability to engage in deep, sustained thinking.</div>
-      </div>
-      <div class="source reveal">
+        <span class="view-paper">View paper ↗</span>
+      </a>
+      <a class="source reveal" href="https://pubmed.ncbi.nlm.nih.gov/41231585/" target="_blank" rel="noopener">
         <div class="source-meta">Computers in Human Behavior · 2025</div>
         <h4>Nguyen et al.: Feeds, feelings, and focus (meta-analysis)</h4>
         <p>Synthesizes findings across studies: reduced attention span, lower cognitive performance, and elevated anxiety from heavy short-form use.</p>
-        <div class="key-finding">→ Effects are widespread and consistent, evidence of a broad cultural shift in how information is consumed.</div>
-      </div>
+        <div class="key-finding">→ Heavy users score measurably lower on attention and cognitive performance, and higher on anxiety. The pattern replicates across multiple studies, populations, and platforms. This is a reproducible behavior change, not an opinion.</div>
+        <span class="view-paper">View paper ↗</span>
+      </a>
       <div class="source reveal" style="background: linear-gradient(135deg, rgba(255,45,99,0.1), rgba(37,244,238,0.05)); border-color: rgba(255,45,99,0.3);">
         <div class="source-meta" style="color: var(--accent);">Anthropological Lens</div>
         <h4>Why this matters for cultural anthropology</h4>
         <p>Short-form platforms aren't neutral tools. They're cultural environments. The patterns above reveal how humans adapt cognitively and socially to technologies designed for engagement, not understanding.</p>
         <div class="key-finding" style="border-color: var(--accent); background: rgba(255,45,99,0.06);">→ Culture is no longer just transmitted through ritual or kinship. It's increasingly transmitted through algorithmic feeds.</div>
+        <span class="view-paper placeholder">.</span>
       </div>
     </div>
   </div>
 </section>
+
+<!-- CONCLUSION -->
+<section class="conclusion">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">So what?</div>
+      <h2>The feed isn't just media.<br/>It's an <em style="font-style:normal; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent;">environment</em> we live inside.</h2>
+    </div>
+
+    <div class="punch">
+      <div class="punch-card reveal">
+        <div class="num">01</div>
+        <h4>For students</h4>
+        <p>The same platforms that feel like a break are training the brain away from the focus you need to study, write, and learn. Treating short-form use as a daily time budget choice, not just a habit, is the most actionable step.</p>
+      </div>
+      <div class="punch-card reveal">
+        <div class="num">02</div>
+        <h4>For anthropology</h4>
+        <p>Culture is no longer transmitted only through ritual, kinship, or institutions. It's now also shaped by algorithmic feeds, which means the discipline has to study code and design as cultural forces, not just side effects.</p>
+      </div>
+      <div class="punch-card reveal">
+        <div class="num">03</div>
+        <h4>The argument</h4>
+        <p>Short-form media is doing more than entertaining us. It is rewiring attention, shifting social norms toward speed and novelty, and producing a measurable cultural transformation in how humans process information.</p>
+      </div>
+    </div>
+
+    <div class="closing-quote reveal">
+      We don't just <em>use</em> these platforms. They are quietly rewriting what attention, learning, and culture mean in 2026, and that is exactly the kind of shift anthropology exists to make visible.
+    </div>
+  </div>
+</section>
+
+<!-- PROFILE MODAL (the reveal) -->
+<div class="profile-modal" id="profileModal">
+  <div class="profile-card">
+    <div class="profile-tag">Profile compiled</div>
+    <h2>You think you chose freely.<br/>Here's what <em>actually</em> happened.</h2>
+    <p class="sub">After just a handful of taps, the algorithm has built a working model of you. The left column is what most people remember doing. The right column is what was logged.</p>
+
+    <div class="profile-grid">
+      <div class="profile-col left">
+        <div class="col-label">What you think you did</div>
+        <ul>
+          <li><span>Just watched a few clips</span></li>
+          <li><span>Liked some content I enjoyed</span></li>
+          <li><span>Skipped what felt boring</span></li>
+          <li><span>I'm in control of my feed</span></li>
+        </ul>
+      </div>
+      <div class="profile-col right">
+        <div class="col-label">What the algorithm logged</div>
+        <ul>
+          <li><span>Behavioral signals captured</span><strong id="pSignals">0</strong></li>
+          <li><span>Top inferred interest</span><strong id="pTop">—</strong></li>
+          <li><span>Short-form preference</span><strong id="pShort">0%</strong></li>
+          <li><span>Dopamine-seeking behavior</span><strong id="pDopa" class="high">HIGH</strong></li>
+          <li><span>Attention retention</span><strong id="pAttn" class="low">LOW</strong></li>
+          <li><span>Profile confidence</span><strong id="pConf">0%</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="closer">
+      You aren't browsing the feed. The feed is <em>profiling you.</em> Every pause, every rewatch, every fast-skip is a data point training a model whose only goal is to keep you here longer.
+    </div>
+
+    <div class="profile-actions">
+      <button class="profile-btn" onclick="closeProfileModal()">Continue (the feed will now adapt) →</button>
+      <button class="profile-btn ghost" onclick="closeProfileModal(); resetFeed();">Reset and try again</button>
+    </div>
+  </div>
+</div>
 
 <footer>
   Inside the Feed · Andy Metgher · Anthropology Portfolio Project · Spring 2026
@@ -790,6 +1069,13 @@
 
   let currentVideo = 0;
   let hasInteracted = false;
+  // Behavioral counters used to build the profile reveal
+  let likeCount = 0, skipCount = 0, shareCount = 0, rewatchCount = 0;
+  let totalActions = 0;
+  let modalShown = false;
+  let escalated = false;
+  let autoIntervalMs = 4500;
+  const PROFILE_THRESHOLD = 6; // taps before the profile-reveal modal fires
   const videoCard = document.getElementById('videoCard');
   const videoBg = document.getElementById('videoBg');
   const videoLabelEl = document.getElementById('videoLabel');
@@ -817,10 +1103,31 @@
     probe.src = v.img;
   }
 
+  function pickNextVideoIndex() {
+    if (!escalated) {
+      // Pre-escalation: simple round-robin
+      return (currentVideo + 1) % videos.length;
+    }
+    // Post-escalation: weighted random by current interest, never repeat current
+    const weights = videos.map(v => Math.max(1, interests[v.cat]));
+    const total = weights.reduce((a, b) => a + b, 0);
+    for (let attempt = 0; attempt < 6; attempt++) {
+      let r = Math.random() * total;
+      for (let i = 0; i < weights.length; i++) {
+        r -= weights[i];
+        if (r <= 0) {
+          if (i !== currentVideo) return i;
+          break;
+        }
+      }
+    }
+    return (currentVideo + 1) % videos.length;
+  }
+
   function nextVideo() {
     videoCard.classList.add('swipe-up');
     setTimeout(() => {
-      currentVideo = (currentVideo + 1) % videos.length;
+      currentVideo = pickNextVideoIndex();
       videoCard.classList.remove('swipe-up');
       videoCard.classList.add('swipe-in');
       loadVideo(currentVideo);
@@ -859,14 +1166,59 @@
       document.querySelector(`.bar-fill[data-cat="${k}"]`).style.width = pct + '%';
       document.querySelector(`.pct[data-pct="${k}"]`).textContent = pct + '%';
     });
+    updateVerdict();
+  }
+
+  function updateVerdict() {
+    const readOut = document.getElementById('readOut');
+    const verdict = document.getElementById('verdict');
+    if (!hasInteracted) {
+      readOut.classList.add('empty');
+      verdict.textContent = 'Interact with the feed to see your inferred profile.';
+      return;
+    }
+    readOut.classList.remove('empty');
+    const total = Object.values(interests).reduce((a,b) => a+b, 0);
+    const sorted = Object.entries(interests).sort((a,b) => b[1] - a[1]);
+    const top = sorted[0];
+    const second = sorted[1];
+    const topPct = Math.round((top[1] / total) * 100);
+    const secondPct = Math.round((second[1] / total) * 100);
+    const totalActions = Math.max(0, total - 100); // baseline was 5*20 = 100
+    const engagement = totalActions > 80 ? 'high engagement' : totalActions > 30 ? 'moderate engagement' : 'low engagement';
+    const niche = topPct >= 40 ? 'strongly' : topPct >= 28 ? 'leaning' : 'lightly leaning';
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+    verdict.innerHTML = `${niche} <strong>${cap(top[0])}</strong> (${topPct}%), with secondary interest in ${cap(second[0])} (${secondPct}%). Profile: ${engagement} user.`;
+  }
+
+  function resetFeed() {
+    interests = { dance: 20, study: 20, food: 20, gaming: 20, fitness: 20 };
+    t = 0;
+    hasInteracted = false;
+    likeCount = skipCount = shareCount = rewatchCount = totalActions = 0;
+    modalShown = false;
+    escalated = false;
+    autoIntervalMs = 4500;
+    document.getElementById('intensity').classList.remove('show');
+    document.getElementById('signals').innerHTML = `
+      <div class="signal">
+        <span class="signal-time">0.0s</span>
+        <span class="signal-type watch">WATCH</span>
+        <span class="signal-detail">video loaded · model: cold start</span>
+      </div>`;
+    currentVideo = 0;
+    loadVideo(0);
+    updateBars();
   }
 
   function signal(action) {
     hasInteracted = true;
+    totalActions++;
     const v = videos[currentVideo];
     const cat = v.cat;
 
     if (action === 'like') {
+      likeCount++;
       interests[cat] += 25;
       likeBtn.classList.add('liked');
       popHeart();
@@ -874,21 +1226,84 @@
       updateBars();
       setTimeout(nextVideo, 1100);
     } else if (action === 'skip') {
+      skipCount++;
       interests[cat] = Math.max(2, interests[cat] - 15);
       logSignal('SKIP', `-15 weight on "${cat}", swiped at 0.4s`);
       updateBars();
       nextVideo();
     } else if (action === 'rewatch') {
+      rewatchCount++;
       interests[cat] += 18;
       logSignal('WATCH', `rewatched "${cat}", strong signal`);
       updateBars();
       setTimeout(nextVideo, 1100);
     } else if (action === 'share') {
+      shareCount++;
       interests[cat] += 35;
       popHeart();
       logSignal('LIKE', `shared "${cat}", strongest signal (+35)`);
       updateBars();
       setTimeout(nextVideo, 1100);
+    }
+
+    // Trigger the profile reveal once we have enough data on the user
+    if (!modalShown && totalActions >= PROFILE_THRESHOLD) {
+      modalShown = true;
+      setTimeout(showProfileModal, 1300);
+    }
+  }
+
+  /* ---------- Profile reveal modal ---------- */
+  function computeProfile() {
+    const total = Object.values(interests).reduce((a,b) => a+b, 0);
+    const sorted = Object.entries(interests).sort((a,b) => b[1] - a[1]);
+    const top = sorted[0];
+    const topPct = Math.round((top[1] / total) * 100);
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+    // Total signals: each action represents multiple internal logs (load, watch-time, etc.)
+    const signals = totalActions * 3 + Math.min(20, Math.round(t));
+    // Dopamine score: likes + shares heavily, rewatches some, skips negative
+    const dopamine = likeCount * 2 + shareCount * 3 + rewatchCount;
+    const dopaLabel = dopamine >= 8 ? 'HIGH' : dopamine >= 4 ? 'MODERATE' : 'LOW';
+    // Attention retention: inverse of skip ratio
+    const skipRatio = totalActions > 0 ? skipCount / totalActions : 0;
+    const attnLabel = skipRatio >= 0.4 ? 'LOW' : skipRatio >= 0.2 ? 'MODERATE' : 'HIGH';
+    // Confidence grows with action count, capped at 95%
+    const confidence = Math.min(95, 40 + totalActions * 6);
+    // "Short-form preference": fraction of actions that were quick or engaged (skip+like+share rapid)
+    const shortPref = Math.min(99, 60 + Math.round((likeCount + skipCount + shareCount) / Math.max(1, totalActions) * 30));
+
+    return {
+      signals, topName: cap(top[0]), topPct,
+      shortPref, dopaLabel, attnLabel, confidence
+    };
+  }
+
+  function showProfileModal() {
+    const p = computeProfile();
+    document.getElementById('pSignals').textContent = p.signals;
+    document.getElementById('pTop').textContent = `${p.topName} (${p.topPct}%)`;
+    document.getElementById('pShort').textContent = `${p.shortPref}%`;
+    const dopa = document.getElementById('pDopa');
+    dopa.textContent = p.dopaLabel;
+    dopa.className = p.dopaLabel === 'HIGH' ? 'high' : p.dopaLabel === 'LOW' ? 'low' : '';
+    const attn = document.getElementById('pAttn');
+    attn.textContent = p.attnLabel;
+    attn.className = p.attnLabel === 'LOW' ? 'high' : p.attnLabel === 'HIGH' ? 'low' : '';
+    document.getElementById('pConf').textContent = `${p.confidence}%`;
+    document.getElementById('profileModal').classList.add('active');
+    document.body.classList.add('locked');
+  }
+
+  function closeProfileModal() {
+    document.getElementById('profileModal').classList.remove('active');
+    document.body.classList.remove('locked');
+    // Escalate: feed pace speeds up and starts weighting toward inferred top interest
+    if (!escalated) {
+      escalated = true;
+      autoIntervalMs = 2200;
+      document.getElementById('intensity').classList.add('show');
     }
   }
 
@@ -902,14 +1317,18 @@
     });
   });
 
-  /* Auto-advance occasionally, but only after the user has interacted at least once */
-  setInterval(() => {
-    if (!hasInteracted) return;
-    if (Math.random() < 0.18) {
-      const acts = ['rewatch','skip','like'];
-      signal(acts[Math.floor(Math.random()*acts.length)]);
-    }
-  }, 4500);
+  /* Auto-advance occasionally, only after the user has interacted at least once.
+     After escalation the cadence speeds up significantly. */
+  function scheduleAutoTick() {
+    setTimeout(() => {
+      if (hasInteracted && Math.random() < (escalated ? 0.4 : 0.18)) {
+        const acts = escalated ? ['rewatch','like','like','rewatch','skip'] : ['rewatch','skip','like'];
+        signal(acts[Math.floor(Math.random()*acts.length)]);
+      }
+      scheduleAutoTick();
+    }, autoIntervalMs);
+  }
+  scheduleAutoTick();
 
   // Initial load
   loadVideo(currentVideo);
